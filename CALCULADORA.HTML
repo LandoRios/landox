@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Avançada</title>
+    <style>
+        :root {
+            --primary-color: #143a61;
+            --primary-light: #4f8dcb;
+            --dark-bg: #061525;
+            --border-color: #2a547a;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 400px;
+            min-width: 400px;
+            margin: 0 auto;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            box-sizing: border-box;
+            height: 100vh;
+            max-height: 600px;
+            min-height: 600px;
+            overflow: hidden;
+        }
+
+        .app-header {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            background-color: var(--primary-color);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .display {
+            background-color: var(--primary-color);
+            padding: 7px;
+            text-align: right;
+            font-size: 22px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            min-height: 20px;
+            color: #8cb3e5;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .keypad button {
+            padding: 10px;
+            font-size: 20px;
+            font-family: Arial, sans-serif;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            min-width: 60px;
+            min-height: 40px;
+            font-weight: bold;
+        }
+
+        .keypad button:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Lista de histórico */
+        .history-list {
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 5px;
+            height: 95px;
+            min-height: 95px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Estilização da barra de rolagem */
+        .history-list::-webkit-scrollbar {
+            width: 6px;  /* Largura da barra de rolagem reduzida pela metade */
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: var(--primary-color);  /* Cor do fundo da barra */
+            border-radius: 3px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--primary-light);  /* Cor da barra de rolagem */
+            border-radius: 3px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background: var(--border-color);  /* Cor ao passar o mouse */
+        }
+
+        .history-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 3px;
+            border-bottom: 1px solid var(--border-color);
+            height: 25px;
+            min-height: 25px;
+        }
+
+        .history-item:hover {
+            background-color: rgba(79, 141, 203, 0.3);
+        }
+
+        .history-item.selected {
+            background: none;
+        }
+
+        /* Ações do histórico */
+        .history-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .history-actions span {
+            cursor: pointer;
+            font-size: 13px;
+            padding: 5px 8px;
+        }
+
+        .history-actions span:hover {
+            color: white;
+            background-color: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        /* Caixa de mensagens */
+        .message-box {
+            background-color: var(--primary-light);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 5px 0;
+            text-align: center;
+            font-size: 13px;
+            display: block;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            min-height: 10px;
+        }
+
+        /* Formulário de edição */
+        .edit-form {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            min-height: 25px;
+            background: none;
+            border-radius: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .edit-form input,
+        .edit-form select {
+            padding: 2px 4px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 13px;
+            height: 22px;
+            box-sizing: border-box;
+        }
+
+        .edit-form input {
+            width: 56px;
+        }
+
+        .edit-form select {
+            width: 35px;
+            text-align: center;
+        }
+
+        /* Botões de edição */
+        .edit-button {
+            padding: 8px 12px !important;
+            margin: 0 4px !important;
+            cursor: pointer;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 13px;
+            min-width: 40px;
+            height: 35px;
+            box-sizing: border-box;
+        }
+
+        .edit-button:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Botões de controle */
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .control-buttons button {
+            font-size: 13px;
+            padding: 6px;
+            min-height: 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .control-buttons button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .edit-form input:focus,
+        .edit-form select:focus,
+        .edit-form button:focus {
+            outline: 2px solid var(--primary-light);
+            outline-offset: -2px;
+        }
+
+        .edit-form input,
+        .edit-form select,
+        .edit-form button {
+            cursor: pointer;
+        }
+
+        .edit-form button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .edit-form input[type="number"] {
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .edit-form input[type="number"]::-webkit-inner-spin-button,
+        .edit-form input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Esconder ícones durante edição */
+        .history-item.selected .history-actions {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="app-header">Calculadora v1.2</div>
+        
+        <div class="history-list" id="historyList">
+            <!-- Itens serão adicionados dinamicamente -->
+        </div>
+
+        <div class="message-box" id="messageBox"></div>
+
+        <div class="control-buttons">
+            <button onclick="FNCbackspace()" title="Backspace">⌫ Apagar</button>
+            <button onclick="FNCclearHistory()" title="Ctrl+L">🗑️ Limpar Histórico</button>
+        </div>
+
+        <div class="display" id="display">0</div>
+
+        <div class="keypad">
+            <button onclick="FNCappendNumber(7)">7</button>
+            <button onclick="FNCappendNumber(8)">8</button>
+            <button onclick="FNCappendNumber(9)">9</button>
+            <button onclick="FNCsetOperation('/')">/</button>
+            
+            <button onclick="FNCappendNumber(4)">4</button>
+            <button onclick="FNCappendNumber(5)">5</button>
+            <button onclick="FNCappendNumber(6)">6</button>
+            <button onclick="FNCsetOperation('*')">×</button>
+            
+            <button onclick="FNCappendNumber(1)">1</button>
+            <button onclick="FNCappendNumber(2)">2</button>
+            <button onclick="FNCappendNumber(3)">3</button>
+            <button onclick="FNCsetOperation('-')">-</button>
+            
+            <button onclick="FNCappendNumber(0)">0</button>
+            <button onclick="FNCappendDecimal()">.</button>
+            <button onclick="FNCcalculate()">=</button>
+            <button onclick="FNCsetOperation('+')">+</button>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let VARcurrentValue = '0';
+        let VARhistory = [];
+        let VARlastOperation = null;
+        let VARnewNumber = true;
+        let VARpreviousValue = null;
+        let VARcurrentOperation = null;
+        let VARcurrentExpression = '';
+
+        function FNCshowMessage(message) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+        }
+
+        function FNCexitEditMode() {
+            const editForm = document.querySelector('.edit-form');
+            if (editForm) {
+                const expressionSpan = editForm.parentElement;
+                expressionSpan.textContent = expressionSpan.getAttribute('data-original');
+                document.querySelector('.history-item.selected')?.classList.remove('selected');
+                FNCrecalculateTotal();
+                FNCsaveHistory();
+                FNCshowMessage('Edição cancelada: clique fora do item.');
+            }
+        }
+
+        function FNCbackspace() {
+            FNCexitEditMode();
+            if (VARcurrentExpression.length > 0) {
+                if (VARcurrentExpression.endsWith(' ')) {
+                    VARcurrentExpression = VARcurrentExpression.slice(0, -3);
+                    VARcurrentOperation = null;
+                } else {
+                    VARcurrentExpression = VARcurrentExpression.slice(0, -1);
+                }
+
+                if (VARcurrentExpression === '' || VARcurrentExpression === '0') {
+                    VARcurrentExpression = '0';
+                    VARcurrentOperation = null;
+                    VARnewNumber = true;  // Marca como novo número para substituir o zero
+                }
+
+                document.getElementById('display').textContent = VARcurrentExpression;
+                FNCshowMessage('Último caractere foi apagado.');
+            }
+        }
+
+        function FNCcloseAllEditing() {
+            document.querySelectorAll('.edit-form').forEach(form => {
+                const historyItem = form.closest('.history-item');
+                const expressionSpan = historyItem.querySelector('span:first-child');
+                expressionSpan.textContent = expressionSpan.getAttribute('data-original');
+            });
+        }
+
+        function FNCappendNumber(num) {
+            FNCexitEditMode();
+            if (VARnewNumber || VARcurrentExpression === '0') {
+                VARcurrentExpression = num.toString();
+                VARnewNumber = false;
+            } else {
+                VARcurrentExpression += num.toString();
+            }
+            document.getElementById('display').textContent = VARcurrentExpression;
+        }
+
+        function FNCappendDecimal() {
+            if (!VARcurrentExpression.includes('.')) {
+                VARcurrentExpression += '.';
+                document.getElementById('display').textContent = VARcurrentExpression;
+            }
+        }
+
+        function FNCsetOperation(op) {
+            FNCexitEditMode();
+            if (VARcurrentOperation !== null) {
+                VARcurrentExpression = VARcurrentExpression.replace(/[+\-*/]\s*$/, '');
+            }
+            
+            if (!VARcurrentExpression.endsWith(' ')) {
+                VARcurrentExpression += ' ';
+            }
+            VARcurrentExpression += op + ' ';
+            
+            VARcurrentOperation = op;
+            VARnewNumber = false;
+            document.getElementById('display').textContent = VARcurrentExpression;
+        }
+
+        function FNCcalculate() {
+            FNCexitEditMode();
+            if (VARcurrentOperation === null) return;
+
+            const parts = VARcurrentExpression.trim().split(/\s+/);
+            if (parts.length < 3) return;
+
+            const num1 = parseFloat(parts[0]);
+            const num2 = parseFloat(parts[2]);
+            let result;
+
+            switch(VARcurrentOperation) {
+                case '+': result = num1 + num2; break;
+                case '-': result = num1 - num2; break;
+                case '*': result = num1 * num2; break;
+                case '/': 
+                    if (num2 === 0) {
+                        FNCshowMessage('Erro: Impossível dividir por zero.');
+                        return;
+                    }
+                    result = num1 / num2; 
+                    break;
+            }
+
+            FNCaddToHistory(VARcurrentExpression.trim(), result);
+            VARcurrentExpression = result.toString();
+            VARcurrentOperation = null;
+            VARnewNumber = true;
+            FNCrecalculateTotal();
+        }
+
+        function FNCaddToHistory(expression, result) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span onclick="FNCeditHistoryItem(this)">${expression} = ${result}</span>
+                <div class="history-actions">
+                    <span onclick="FNCeditHistoryItem(this)">✎</span>
+                    <span onclick="FNCdeleteHistoryItem(this)">🗑️</span>
+                </div>
+            `;
+            const historyList = document.getElementById('historyList');
+            historyList.appendChild(historyItem);
+            historyList.scrollTop = historyList.scrollHeight; // Rola para o último item
+            FNCsaveHistory();
+            FNCshowMessage(`Operação adicionada: ${expression} = ${result}`);
+        }
+
+        function FNCdeleteHistoryItem(element) {
+            const historyItem = element.closest('.history-item');
+            const expression = historyItem.querySelector('span:first-child').textContent;
+            historyItem.remove();
+            FNCrecalculateTotal();
+            FNCshowMessage(`Item removido: ${expression}`);
+        }
+
+        function FNCeditHistoryItem(element) {
+            // Fecha outros itens em edição
+            FNCcloseAllEditing();
+            
+            // Remove seleção anterior
+            document.querySelectorAll('.history-item.selected').forEach(item => 
+                item.classList.remove('selected'));
+            
+            const historyItem = element.closest('.history-item');
+            historyItem.classList.add('selected');
+            const expressionSpan = historyItem.querySelector('span:first-child');
+            
+            if (!expressionSpan.getAttribute('data-original')) {
+                expressionSpan.setAttribute('data-original', expressionSpan.textContent);
+            }
+            
+            const originalText = expressionSpan.getAttribute('data-original');
+            const [expression] = originalText.split('=');
+            const matches = expression.trim().match(/^([\d.]+)\s*([+\-*/])\s*([\d.]+)$/);
+            if (!matches) return;
+            
+            const [_, num1, operator, num2] = matches;
+            
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-form';
+            editForm.innerHTML = `
+                <input type="number" value="${num1}" step="any" style="width: 80px;">
+                <select style="width: 50px;">
+                    <option value="+" ${operator === '+' ? 'selected' : ''}>+</option>
+                    <option value="-" ${operator === '-' ? 'selected' : ''}>-</option>
+                    <option value="*" ${operator === '*' ? 'selected' : ''}>×</option>
+                    <option value="/" ${operator === '/' ? 'selected' : ''}>/</option>
+                </select>
+                <input type="number" value="${num2}" step="any" style="width: 80px;">
+            `;
+
+            // Adiciona eventos para melhorar a navegação
+            const inputs = editForm.querySelectorAll('input');
+            const select = editForm.querySelector('select');
+            const buttons = editForm.querySelectorAll('button');
+
+            // Permite clicar nos inputs e select
+            inputs.forEach(input => {
+                input.onclick = function(e) {
+                    e.stopPropagation();
+                    this.select();
+                };
+            });
+
+            select.onclick = function(e) {
+                e.stopPropagation();
+            };
+
+            buttons.forEach(button => {
+                button.onclick = function(e) {
+                    e.stopPropagation();
+                };
+            });
+
+            expressionSpan.innerHTML = '';
+            expressionSpan.appendChild(editForm);
+            editForm.querySelector('input').focus();
+            FNCshowMessage('Editando: Enter para Salvar ou Esc para Cancelar.');
+        }
+
+        function FNCsaveHistoryEdit(button) {
+            const container = button.parentElement;
+            const num1 = container.querySelector('input:first-of-type').value;
+            const operator = container.querySelector('select').value;
+            const num2 = container.querySelector('input:last-of-type').value;
+            
+            let result;
+            switch(operator) {
+                case '+': result = parseFloat(num1) + parseFloat(num2); break;
+                case '-': result = parseFloat(num1) - parseFloat(num2); break;
+                case '*': result = parseFloat(num1) * parseFloat(num2); break;
+                case '/': 
+                    if (parseFloat(num2) === 0) {
+                        FNCshowMessage('Erro: Impossível dividir por zero.');
+                        return;
+                    }
+                    result = parseFloat(num1) / parseFloat(num2); 
+                    break;
+            }
+            
+            container.parentElement.innerHTML = `${num1} ${operator} ${num2} = ${result}`;
+            FNCrecalculateTotal();
+            FNCsaveHistory();
+        }
+
+        function FNCcancelHistoryEdit(button) {
+            const historyItem = button.closest('.history-item');
+            const expressionSpan = historyItem.querySelector('span:first-child');
+            expressionSpan.textContent = expressionSpan.getAttribute('data-original');
+            FNCshowMessage('Edição cancelada.');
+        }
+
+        function FNCrecalculateTotal() {
+            const historyItems = document.querySelectorAll('.history-item span:first-child');
+            let total = 0;
+            
+            historyItems.forEach(item => {
+                const text = item.textContent;
+                const parts = text.split('=');
+                if (parts.length === 2) {
+                    const result = parseFloat(parts[1].trim());
+                    if (!isNaN(result)) {
+                        total += result;
+                    }
+                }
+            });
+            
+            document.getElementById('display').textContent = total.toString();
+            VARcurrentValue = total.toString();
+            VARcurrentExpression = total.toString();
+            VARnewNumber = true;
+            VARcurrentOperation = null;
+        }
+
+        function FNCsaveHistory() {
+            const historyList = document.getElementById('historyList').innerHTML;
+            localStorage.setItem('calculatorHistory', historyList);
+        }
+
+        function FNCclearHistory() {
+            FNCexitEditMode();
+            const count = document.querySelectorAll('.history-item').length;
+            document.getElementById('historyList').innerHTML = '';
+            VARcurrentValue = '0';
+            VARpreviousValue = null;
+            VARcurrentOperation = null;
+            VARnewNumber = true;
+            document.getElementById('display').textContent = VARcurrentValue;
+            FNCsaveHistory();
+            FNCshowMessage(`Histórico limpo: ${count} itens removidos.`);
+        }
+
+        function FNCinitialize() {
+            const savedHistory = localStorage.getItem('calculatorHistory');
+            if (savedHistory) {
+                document.getElementById('historyList').innerHTML = savedHistory;
+                FNCrecalculateTotal();
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', (e) => {
+            const editForm = document.querySelector('.edit-form');
+            if (editForm) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const num1 = editForm.querySelector('input:first-of-type').value;
+                    const operator = editForm.querySelector('select').value;
+                    const num2 = editForm.querySelector('input:last-of-type').value;
+                    
+                    let result;
+                    switch(operator) {
+                        case '+': result = parseFloat(num1) + parseFloat(num2); break;
+                        case '-': result = parseFloat(num1) - parseFloat(num2); break;
+                        case '*': result = parseFloat(num1) * parseFloat(num2); break;
+                        case '/': 
+                            if (parseFloat(num2) === 0) {
+                                FNCshowMessage('Erro: Impossível dividir por zero.');
+                                return;
+                            }
+                            result = parseFloat(num1) / parseFloat(num2); 
+                            break;
+                    }
+                    
+                    editForm.parentElement.innerHTML = `${num1} ${operator} ${num2} = ${result}`;
+                    FNCrecalculateTotal();
+                    FNCsaveHistory();
+                    FNCshowMessage('Edição salva com sucesso.');
+                    return;
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    const expressionSpan = editForm.parentElement;
+                    expressionSpan.textContent = expressionSpan.getAttribute('data-original');
+                    FNCshowMessage('Edição cancelada.');
+                    return;
+                }
+            }
+
+            // Evita conflito com inputs em edição
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                if (e.key === 'Enter') {
+                    FNCsaveHistoryEdit(e.target.closest('div').querySelector('button'));
+                    e.preventDefault();
+                } else if (e.key === 'Escape') {
+                    FNCcancelHistoryEdit(e.target.closest('div').querySelector('button:last-child'));
+                    e.preventDefault();
+                }
+                return;
+            }
+
+            // Atalhos globais
+            if (e.key >= '0' && e.key <= '9') {
+                FNCappendNumber(parseInt(e.key));
+            } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                FNCsetOperation(e.key);
+            } else if (e.key === 'Enter') {
+                FNCcalculate();
+            } else if (e.key === 'Backspace') {
+                FNCbackspace();
+            } else if (e.key === '.') {
+                FNCappendDecimal();
+            } else if (e.key === 'Delete') {
+                // Delete para remover item selecionado
+                const selected = document.querySelector('.history-item.selected');
+                if (selected) FNCdeleteHistoryItem(selected.querySelector('.history-actions span:last-child'));
+            } else if (e.ctrlKey && e.key === 'l') {
+                // Ctrl+L para limpar histórico
+                e.preventDefault();
+                FNCclearHistory();
+            } else if (e.key === 'F2') {
+                // F2 para editar item selecionado
+                const selected = document.querySelector('.history-item.selected');
+                if (selected) FNCeditHistoryItem(selected.querySelector('span:first-child'));
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            // Se o clique não foi dentro de um item do histórico ou seus controles
+            if (!e.target.closest('.history-item') && !e.target.closest('.edit-form')) {
+                FNCexitEditMode();
+            }
+        });
+
+        // Previne que o clique nos inputs/select do form de edição feche o modo de edição
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.edit-form')) {
+                e.stopPropagation();
+            }
+        }, true);
+
+        // Inicialização
+        FNCinitialize();
+    </script>
+</body>
+</html>

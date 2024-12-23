@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ninja</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .highlight {
+      background-color: #4CAF50;
+      color: white;
+      padding: 0 2px;
+      border-radius: 2px;
+      font-weight: bold;
+    }
+
+    :root {
+      --primary-color: #4f8dcb;
+      --primary-hover: #3a7ab8;
+      --primary-light: #66aaff;
+      --dark-bg: #0d263f;
+      --body-bg: #143a61;
+      --border-color: rgba(79, 141, 203, 0.2);
+      --verified-color: #4CAF50;
+    }
+
+    body {
+      background-color: var(--body-bg);
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-size: 12px;
+    }
+
+    LINninja {
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+      padding: 6px;
+      background-color: var(--dark-bg);
+      border-bottom: 1px solid var(--primary-color);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    textarea {
+      width: calc(100% - 20px);
+      padding: 6px;
+      border: 1px solid var(--dark-bg);
+      border-radius: 5px;
+      background-color: var(--dark-bg);
+      color: white;
+      resize: none;
+      overflow: hidden;
+      height: calc(2.5em);
+      margin: 5px auto;
+    }
+
+    textarea::placeholder {
+      white-space: pre-wrap;
+    }
+
+    button {
+      height: 30px;
+      padding: 6px;
+      min-width: 80px;
+      border: 1px solid var(--primary-color);
+      border-radius: 3px;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 28px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover:enabled {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3px;
+      margin: 5px 0;
+    }
+
+    .button-container button {
+      padding: 3px 8px;
+      margin: 2px;
+      min-width: 70px;
+    }
+
+    .button-special {
+      background-color: var(--primary-color) !important;
+      border: 2px solid #ffffff !important;
+      font-weight: bold !important;
+      padding: 6px 20px !important;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .button-special:hover {
+      background-color: var(--primary-light) !important;
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+    }
+
+    #TXTresp {
+      width: calc(100% - 20px);
+      height: 400px;
+      background-color: var(--dark-bg);
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-family: monospace;
+      margin: 5px auto;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    #TXTresp::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    #TXTresp::-webkit-scrollbar-thumb {
+      background-color: var(--primary-color);
+      border-radius: 6px;
+    }
+
+    #TXTresp::-webkit-scrollbar-thumb:hover {
+      background-color: var(--primary-hover);
+    }
+
+    #TXTresp::-webkit-scrollbar-track {
+      background-color: var(--dark-bg);
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 80px 93px 72px 65px auto;
+      gap: 3px;
+      padding: 9px 0;
+      margin-left: -5px;
+      margin-top: -9px;
+      padding-left: -12px;
+      background-color: var(--dark-bg);
+      border-bottom: 2px solid var(--primary-color);
+      font-weight: bold;
+      font-size: 16px;
+      position: sticky;
+      top: -8px;
+      z-index: 1;
+    }
+
+    .header>div {
+      cursor: pointer;
+      user-select: none;
+      padding: 0 5px;
+      position: relative;
+    }
+
+    .header>div:hover {
+      background-color: var(--primary-color);
+      border-radius: 3px;
+    }
+
+    header>div::after {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: 60px 100px 70px 90px auto;
+      gap: 3px;
+      padding: 6px 0;
+      margin-left: -10px;
+      /* Ajustado para match com o header */
+      padding-left: 0;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+    }
+
+    .line:hover {
+      background-color: rgba(79, 141, 203, 0.1);
+    }
+
+    .line:focus {
+      background-color: var(--primary-light);
+    }
+
+    .line.selected {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+    }
+
+    .line.selected span {
+      color: black;
+      font-weight: bold;
+    }
+
+    .valor {
+      text-align: right;
+      font-family: monospace;
+      padding-right: 5px;
+    }
+
+    .posic {
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .ver {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .code {
+      text-align: center;
+      font-family: monospace;
+    }
+
+    .item {
+      text-align: left;
+    }
+
+    .verified {
+      color: var(--verified-color);
+      font-weight: bold;
+    }
+
+    #LINmsg {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: bold;
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      overflow: hidden;
+      display: none;
+      z-index: 1000;
+      transition: none;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .filter-group label {
+      color: white;
+      font-size: 0.9em;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 3px;
+      border-radius: 3px;
+      border: 1px solid var(--primary-color);
+      background-color: var(--dark-bg);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .button-container {
+        gap: 3px;
+        margin: 3px 0;
+      }
+
+      textarea {
+        height: 3em;
+      }
+
+      @media (max-width: 768px) {
+        #TXTresp {
+          height: calc(100vh - 200px);
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <LINninja>
+    <div style="display: flex; align-items: center; gap: 3px;">
+      <img src="https://raw.githubusercontent.com/OrlandoAlvaresRios/img/main/ninja.jpg"
+        style="height: 35px; width: 35px; filter: invert(1%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(70%) contrast(90%); transition: all 0.3s ease;">
+      <span id="VARnameVerSpan"></span>
+    </div>
+    <div id="LINmsg">...</div>
+  </LINninja>
+
+  <textarea id="TXTquest" rows="1" tabindex="1" style="flex: 1;"></textarea>
+
+  <div style="display: flex; align-items: center; width: calc(100% - 90px); margin: 1px;">
+    <button onclick="FNChelp()" style="background: none; border: none; padding: -50px; margin-left: -20px;">
+      <img src="https://raw.githubusercontent.com/OrlandoAlvaresRios/img/main/ajuda.png"
+        style="height: 30px; width: 30px; filter: invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%); transition: all 0.3s ease;"
+        onmouseover="this.style.filter='invert(31%) sepia(51%) saturate(1200%) hue-rotate(188deg) brightness(92%) contrast(87%)'; this.style.transform='scale(1.1)'"
+        onmouseout="this.style.filter='invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%)'; this.style.transform='scale(1)'" />
+    </button>
+
+    <button onclick="FNCClean()" style="background: none; border: none; padding: -50px; margin-left: -40px;">
+      <img src="https://raw.githubusercontent.com/OrlandoAlvaresRios/img/main/vassoura1.png"
+        style="height: 30px; width: 30px; filter: invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%); transition: all 0.3s ease;"
+        onmouseover="this.style.filter='invert(31%) sepia(51%) saturate(1200%) hue-rotate(188deg) brightness(92%) contrast(87%)'; this.style.transform='scale(1.1)'"
+        onmouseout="this.style.filter='invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%)'; this.style.transform='scale(1)'" />
+    </button>
+
+    <button id="BTNMicrophoneContainer" onclick="FNCstartMicrophone()"
+      style="background: none; border: none; padding: 2px; margin-left: -15px;">
+      <img id="BTNMicrophone" src="https://raw.githubusercontent.com/OrlandoAlvaresRios/img/main/microphone2.png"
+        style="height: 30px; width: 30px; filter: invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%); transition: all 0.3s ease;"
+        onmouseover="if(this.getAttribute('data-recording') !== 'true') this.style.filter='invert(31%) sepia(51%) saturate(1200%) hue-rotate(188deg) brightness(92%) contrast(87%)'; this.style.transform='scale(1.1)'"
+        onmouseout="if(this.getAttribute('data-recording') !== 'true') this.style.filter='invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%)'; this.style.transform='scale(1)'"
+        data-recording="false" />
+    </button>
+
+    <button id="BTNSpeakerContainer" onclick="FNCstartSpeaker()"
+      style="background: none; border: none; padding: 2px; margin-left: -15px;">
+      <img id="BTNSpeaker" src="https://raw.githubusercontent.com/OrlandoAlvaresRios/img/main/speaker1.png"
+        style="height: 30px; width: 30px; filter: brightness(0); transition: all 0.3s ease;" />
+    </button>
+  </div>
+
+  <div class="button-container">
+    <button id="BTNcls" tabindex="2" style="display: none;">Limpar</button>
+    <button id="BTNhelp" tabindex="3" style="display: none;">Ajuda</button>
+
+    <!-- Botões principais -->
+    <button id="BTNorc" tabindex="4" onclick="FNCorcamento()" class="button-special">[O] Orçamento</button>
+    <button id="BTNvenda" tabindex="5" onclick="FNCvenda()" class="button-special">[V] Venda</button>
+  </div>
+
+  <div class="button-container">
+
+    <button id="BTNedit" tabindex="7">Editar</button>
+    <button class="BTNdelete" tabindex="8">Deletar</button>
+    <button class="BTNSaveCreate" tabindex="9">Cadastrar</button>
+  </div>
+
+  <div id="TXTresp" tabindex="10">
+    <div class="header">Valor | Posic | Ver | Code | Item</div>
+  </div>
+
+  <div id="editModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(20, 58, 97, 0.95);
+        padding: 5px;
+        border-radius: 5px;
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4f8dcb;
+        font-size: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+    <div style="
+          background-color: rgba(20, 58, 97, 0.95);
+          padding: 5px;
+          border-radius: 5px;
+          width: 300px;
+          font-size: 12px;
+          color: white;">
+      <div style="
+            background-color: #4f8dcb;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            font-weight: bold;">
+        Editar Item Selecionado
+      </div>
+
+      <label for="editValor">Valor:</label>
+      <input type="text" id="editValor" style="width: 100%; margin-bottom: 10px" maxlength="13"
+        placeholder="999.999,00" />
+
+      <label for="editPosic">Posic:</label>
+      <input type="text" id="editPosic" style="width: 100%; margin-bottom: 10px" maxlength="5" placeholder="99999" />
+
+      <label for="editVer">Verificado S/N:</label>
+      <input type="text" id="editVer" style="width: 100%; margin-bottom: 10px" maxlength="1" placeholder="S/N" />
+
+      <label for="editCode">Code:</label>
+      <input type="text" id="editCode" style="width: 100%; margin-bottom: 10px" disabled />
+
+      <label for="editItem">Item:</label>
+      <input type="text" id="editItem" style="width: 100%; margin-bottom: 20px" />
+
+      <div class="button-container" style="justify-content: space-between">
+        <button id="BTNsave" onclick="BTNSaveEdit()">Salvar</button>
+        <button id="BTNcancel" onclick="FNCcloseEDIT()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="VARcreateModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(20, 58, 97, 0.95);
+        padding: 5px;
+        border-radius: 5px;
+        z-index: 1000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4f8dcb;
+        font-size: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+    <div style="
+          background-color: rgba(20, 58, 97, 0.95);
+          padding: 5px;
+          border-radius: 5px;
+          width: 300px;
+          font-size: 12px;
+          color: white;">
+      <div style="
+            background-color: #4f8dcb;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            font-weight: bold;">
+        Cadastrar Item
+      </div>
+
+      <label for="VARnewValor">Valor:</label>
+      <input type="text" id="VARnewValor" style="width: 100%; margin-bottom: 10px" maxlength="13"
+        placeholder="999.999,00" />
+
+      <label for="VARnewPosic">Posic:</label>
+      <input type="text" id="VARnewPosic" style="width: 100%; margin-bottom: 10px" maxlength="5" placeholder="99999" />
+
+      <label for="VARnewVer">Verificado S/N:</label>
+      <input type="text" id="VARnewVer" style="width: 100%; margin-bottom: 10px" maxlength="1" value="N"
+        placeholder="S/N" />
+
+      <label for="VARnewCode">Code:</label>
+      <input type="text" id="VARnewCode" style="width: 100%; margin-bottom: 10px" disabled />
+      <label for="VARnewItem">Item:</label>
+      <input type="text" id="VARnewItem" style="width: 100%; margin-bottom: 20px" />
+
+      <div class="button-container" style="justify-content: space-between">
+        <button id="BTNSaveCreate" onclick="FNCSaveCreate()">Cadastrar</button>
+        <button id="BTNcancelCreate" onclick="FNCcloseCreate()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="filterArea" style="
+    background-color: #143a61;
+    padding: 6px;
+    margin: 5px;
+    border-radius: 5px;
+    display: flex;
+    gap: 3px;
+    align-items: center;
+">
+
+    <div id="confirmModal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    justify-content: center;
+    font-size: 12px;
+    align-items: center;">
+      <div style="
+        background-color: #143a61;
+        padding: 5px;
+        border-radius: 5px;
+        max-width: 300px;
+        width: 90%;
+        border: 2px solid #4f8dcb;
+        font-size: 12px;
+        text-align: center;">
+        <div id="confirmmsg" style="
+            color: white;
+            margin-bottom: 20px;
+            font-size: 12px;
+            font-size: 12px;">
+        </div>
+        <div style="
+            display: flex;
+            justify-content: space-around;
+            gap: 3px;">
+          <button id="confirmYes" class="button-special">Sim</button>
+          <button id="confirmNo">Não</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="header">
+      <div onclick="FNCortBy('valor')">Valor</div>
+      <div onclick="FNCsortBy('posic')">Posic</div>
+      <div onclick="FNCsortBy('ver')">Ver</div>
+      <div onclick="FNCsortBy('code')">Code</div>
+      <div onclick="FNCsortBy('item')">Item</div>
+    </div>
+
+    <script>
+      const BTNsave = document.getElementById("BTNsave");
+      const BTNcancel = document.getElementById("BTNcancel");
+      const TXTsearch = document.getElementById("TXTquest");
+      const LSTresp = document.getElementById("TXTresp");
+      const LINmsg = document.getElementById("LINmsg");
+      const VARFileName = "itens.dbf";
+      const VARNameVer = "  Ninja versão 1.22";
+      const VARTxtPad1 = "Pesquise item ou Selecione antes e clique nele para continuar.";
+      const VARTxtPad2 = "Fale 'Ninja' seguido do comando de voz ou texto para pesquisar itens.";
+      const VARTxtPad3 = "Bem-vindo ao aplicativo " + VARNameVer;
+
+      let VARColorBlack = ""; // Preto
+      let VARColorBlue = ""; // Azul
+      let VARColorGreen = ""; // Verde
+      let VARmodal = false;  // Variável global para controle de modais
+      let VARMicClique = false;
+      let VARTxtLine = null;
+      let VARmsgTime = null;
+      let VARptVoices = [];
+      let VARrecognition = null;
+
+      let VARspeakerState = {
+        mode: 0,
+        selectedVoice: null
+      };
+
+      const Furl =
+        "https://raw.githubusercontent.com/OrlandoAlvaresRios/itens/refs/heads/main/itens.dbf";
+
+      FNCvalidateNumericInput(document.getElementById("editPosic"), 5);
+
+      FNCvalidateNumericInput(document.getElementById("VARnewPosic"), 5);
+
+      function FNCvalidateNumericInput(input, maxLength) {
+        input.addEventListener("keypress", function (e) {
+          if (!/\d/.test(e.key)) {
+            e.preventDefault();
+          }
+          if (this.value.length >= maxLength) {
+            e.preventDefault();
+          }
+        });
+      }
+
+      function FNCformatMoney(value) {
+        if (!value) return 'R$ 0,00';
+        const numValue = parseFloat(value.replace(/[^\d,]/g, '').replace(',', '.'));
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(numValue);
+      }
+
+      function FNCselectLine(element) {
+        if (VARmodal) return;
+        const previousSelected = document.querySelector(".line.selected");
+        if (previousSelected) {
+          previousSelected.classList.remove("selected");
+        }
+        element.classList.add("selected");
+        VARTxtLine = element;
+        const spans = element.querySelectorAll("span");
+        const valor = spans[0].textContent.trim();
+        const posic = spans[1].textContent.trim();
+        const ver = spans[2].textContent.trim();
+        const code = spans[3].textContent.trim();
+        const item = spans[4].textContent.trim();
+        document.getElementById("editValor").value = valor.replace("R$", "").trim();
+        document.getElementById("editPosic").value = posic;
+        document.getElementById("editVer").value = ver;
+        document.getElementById("editCode").value = code;
+        document.getElementById("editItem").value = item;
+        FNCShowMsg(`Selecionado : ${item}`);
+      }
+
+      function FNCformatMoney(value) {
+        return parseFloat(value)
+          .toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+      }
+
+      function FNCvalidateValor(input) {
+        input.addEventListener("input", function (e) {
+          let value = e.target.value.replace(/\D/g, '');
+          value = (parseFloat(value) / 100).toFixed(2);
+          e.target.value = value.replace('.', ',');
+        });
+      }
+
+      function FNCvalidatePosic(input) {
+        input.addEventListener('input', function (e) {
+          e.target.value = e.target.value.replace(/\D/g, '').substr(0, 5);
+        });
+      }
+
+      function FNCvalidateVer(input) {
+        input.addEventListener('input', function (e) {
+          let value = e.target.value.toUpperCase();
+          if (value && value !== 'S' && value !== 'N') {
+            value = 'N';
+          }
+          e.target.value = value;
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        FNCvalidateValor(document.getElementById('editValor'));
+        FNCvalidatePosic(document.getElementById('editPosic'));
+        FNCvalidateVer(document.getElementById('editVer'));
+
+        FNCvalidateValor(document.getElementById('VARnewValor'));
+        FNCvalidatePosic(document.getElementById('VARnewPosic'));
+        FNCvalidateVer(document.getElementById('VARnewVer'));
+      });
+
+      function FNCformatInputValue(value) {
+        value = value.replace(/\D/g, '');
+        value = (value / 100).toFixed(2);
+        return value.replace('.', ',');
+      }
+
+      document.getElementById('editValor').addEventListener('blur', function (e) {
+        e.target.value = FNCformatInputValue(e.target.value);
+      });
+
+      document.getElementById('VARnewValor').addEventListener('blur', function (e) {
+        e.target.value = FNCformatInputValue(e.target.value);
+      });
+
+      function FNCdebounce(FNCfunc, VARdelay) {
+        let VARtimeoutId;
+        return function (...args) {
+          clearTimeout(VARtimeoutId);
+          VARtimeoutId = setTimeout(() => {
+            FNCfunc.apply(this, args);
+          }, VARdelay);
+        };
+      }
+
+      function FNCverifique() {
+        if (!VARTxtLine) {
+          FNCShowMsg(VARTxtPad1);
+          return false;
+        }
+        return true;
+      }
+
+      function loadFile() {
+        const storedData = localStorage.getItem(VARFileName);
+        if (storedData == null) {
+          FNCrefdatabase();
+        }
+        FNCSearchData("");
+      }
+
+      document.querySelector(".BTNdelete").addEventListener("click", async function () {
+        if (VARmodal) return;
+        if (!VARTxtLine) {
+          FNCShowMsg(VARTxtPad1);
+          return;
+        }
+
+        try {
+          const spans = VARTxtLine.querySelectorAll('span');
+          const code = spans[3].textContent.trim();
+          const item = spans[4].textContent.trim();
+
+          const confirmed = await FNCshowconfirm(`Confirma exclusão do item: ${item}?`);
+
+          if (confirmed) {
+            let data = localStorage.getItem(VARFileName);
+            if (!data) {
+              FNCShowMsg("Erro: Base de dados não encontrada");
+              return;
+            }
+
+            const lines = data.split('\n')
+              .filter(line => line.trim())
+              .filter(line => {
+                const parts = line.split('|');
+                return parts[3].trim() !== code;
+              });
+
+            localStorage.setItem(VARFileName, lines.join('\n'));
+            VARmodal = false;
+            FNCShowMsg("Item deletado com sucesso!");
+            FNCSearchData("");
+            VARTxtLine = null;
+          } else {
+            FNCShowMsg("Operação cancelada");
+          }
+        } catch (error) {
+          FNCShowMsg("Erro ao deletar item");
+        }
+      });
+
+      function FNCopenEDIT(line) {// Modal de Edição
+        if (VARmodal) return;
+        if (!FNCverifique()) return;
+
+        VARmodal = true;
+        FNCShowMsg("Editar item selecionado.");
+
+        const spans = line.querySelectorAll('span');
+        const valor = spans[0].textContent.replace('R$', '').trim();
+        const posic = spans[1].textContent.trim();
+        const ver = spans[2].textContent.trim();
+        const code = spans[3].textContent.trim();
+        const item = spans[4].textContent.trim();
+        document.getElementById("editValor").value = valor;
+        document.getElementById("editPosic").value = posic;
+        document.getElementById("editVer").value = ver;
+        document.getElementById("editCode").value = code;
+        document.getElementById("editItem").value = item;
+        document.getElementById("editModal").style.display = "flex";
+      }
+
+      function FNCcloseEDIT() { // Fecha modal de edição
+        document.getElementById("editModal").style.display = "none";
+        VARmodal = false;
+        FNCShowMsg("Ediçao de item cancelada.");
+      }
+
+      function BTNSaveEdit() {
+        const valor = document.getElementById("editValor").value.trim();
+        const posic = document.getElementById("editPosic").value.trim();
+        const ver = document.getElementById("editVer").value.trim().toUpperCase();
+        const code = document.getElementById("editCode").value.trim();
+        const item = document.getElementById("editItem").value.trim().replace(/\s+/g, ' '); // Remove espaços múltiplos
+        if (!valor || !posic || !ver || !code || !item) {
+          FNCShowMsg("Preencha todos os campos!");
+          return;
+        }
+        if (ver !== 'S' && ver !== 'N') {
+          FNCShowMsg("Verificado deve ser S ou N!");
+          return;
+        }
+        const data = localStorage.getItem(VARFileName);
+        const lines = data.split('\n').filter(line => line.trim());
+        const updatedLines = lines.map(line => {
+          const parts = line.split('|');
+          if (parts[3] === code) {
+            return `${valor}|${posic}|${ver}|${code}|${item}`;
+          }
+          return line;
+        });
+        localStorage.setItem(VARFileName, updatedLines.join('\n'));
+        document.getElementById("editModal").style.display = "none";
+        VARmodal = false;
+        // Recarrega os dados
+        FNCSearchData(document.getElementById("TXTquest").value);
+        // Aguarda a recarga dos dados e seleciona o item editado
+        setTimeout(() => {
+          const lines = document.querySelectorAll('.line');
+          lines.forEach(line => {
+            const lineCode = line.querySelector('span:nth-child(4)').textContent.trim();
+            if (lineCode === code) {
+              // Remove seleção anterior
+              const currentSelected = document.querySelector('.line.selected');
+              if (currentSelected) currentSelected.classList.remove('selected');
+
+              // Seleciona nova linha
+              line.classList.add('selected');
+              VARTxtLine = line;
+              line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          });
+          FNCShowMsg("Item editado com sucesso!");
+        }, 100);
+      }
+
+      function FNCSaveCreate() {
+        let valor = document.getElementById("VARnewValor").value.trim();
+        const posic = document.getElementById("VARnewPosic").value.trim();
+        const ver = document.getElementById("VARnewVer").value.trim().toUpperCase();
+        const code = document.getElementById("VARnewCode").value.trim();
+        let item = document.getElementById("VARnewItem").value.trim().replace(/\s+/g, ' '); // Remove espaços múltiplos
+        // Validações
+        if (!valor || !posic || !ver || !code || !item) {
+          FNCShowMsg("Erro: Todos os campos são obrigatórios.");
+          return;
+        }
+        // Formatar valor
+        valor = valor.replace('R$', '').replace(/\./g, '').replace(',', '.');
+        if (isNaN(parseFloat(valor))) {
+          FNCShowMsg("Erro: Valor inválido.");
+          return;
+        }
+        valor = parseFloat(valor).toFixed(2);
+        // Validar verificador
+        if (!/^[SN]$/.test(ver)) {
+          FNCShowMsg("Erro: Verificador deve ser S ou N.");
+          return;
+        }
+        const newLine = `${valor}|${posic}|${ver}|${code}|${item}`;
+        const data = localStorage.getItem(VARFileName);
+        const lines = data ? data.split('\n').filter(line => line.trim()) : [];
+        lines.push(newLine);
+        lines.sort((a, b) => {
+          const codeA = a.split('|')[3];
+          const codeB = b.split('|')[3];
+          return codeA.localeCompare(codeB);
+        });
+        localStorage.setItem(VARFileName, lines.join('\n'));
+        document.getElementById("VARcreateModal").style.display = "none";
+        VARmodal = false;
+        // Recarrega os dados
+        FNCSearchData(document.getElementById("TXTquest").value);
+        // Aguarda a recarga dos dados e seleciona o item cadastrado
+        setTimeout(() => {
+          const lines = document.querySelectorAll('.line');
+          lines.forEach(line => {
+            const lineCode = line.querySelector('span:nth-child(4)').textContent.trim();
+            if (lineCode === code) {
+              // Remove seleção anterior
+              const currentSelected = document.querySelector('.line.selected');
+              if (currentSelected) currentSelected.classList.remove('selected');
+
+              // Seleciona nova linha
+              line.classList.add('selected');
+              VARTxtLine = line;
+              line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          });
+          FNCShowMsg("Item cadastrado com sucesso!");
+        }, 100);
+      }
+
+      function FNCupdateBTN() {
+        TXTsearch.placeholder = "Digite aqui item ou parte dele ou clique em Ajuda.";
+
+        BTNcancel.innerText = "[ESC] Cancelar";
+        BTNcls.innerText = "[ESC] Limpar";
+        BTNhelp.innerText = "[F1] Ajuda";
+        BTNsave.innerText = "[ENTER] Salvar";
+        document.getElementById("BTNSaveCreate").innerText = "[ENTER] Cadastrar";
+        document.getElementById("BTNcancelCreate").innerText = "[ESC] Cancelar";
+        document.getElementById("BTNedit").innerText = "[E] Editar";
+        document.querySelector(".BTNdelete").innerText = "[D] Deletar";
+        document.querySelector(".BTNSaveCreate").innerText = "[C] Cadastrar";
+
+        if (window.innerWidth <= 768) {
+          BTNcls.innerText = "Limpar";
+          BTNhelp.innerText = "Ajuda";
+          BTNsave.innerText = "Salvar";
+          BTNcancel.innerText = "Cancelar";
+          document.getElementById("BTNedit").innerText = "Editar";
+          document.querySelector(".BTNdelete").innerText = "Deletar";
+          document.querySelector(".BTNSaveCreate").innerText = "Cadastrar";
+          document.getElementById("BTNSaveCreate").innerText = "Cadastrar";
+          document.getElementById("BTNcancelCreate").innerText = "Cancelar";
+        }
+      }
+
+      function FNCnormalizeText(text) {
+        return text
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function FNCnormSTR(str) {
+        const replacements = {
+          á: "a",
+          à: "a",
+          é: "e",
+          ê: "e",
+          í: "i",
+          ó: "o",
+          ô: "o",
+          ú: "u",
+          ç: "c",
+          õ: "o",
+          ã: "a",
+          â: "a",
+          ü: "u",
+        };
+        return str
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[áàéêíóôçãâü]/g, (match) => replacements[match] || match)
+          .replace(/\s+/g, " ") // Remove múltiplos espaços
+      }
+
+      function FNCsearch() {
+        const query = FNCnormSTR(TXTsearch.value);
+        TXTsearch.value = query;
+        FNCSearchData(query);
+      }
+
+      function FNCSearchData(searchTerm) {
+        if (VARmodal) return;
+   VARTxtLine = null;
+   const data = localStorage.getItem(VARFileName);
+   if (!data) {
+       FNCShowMsg("Sem dados para exibir.");
+       return;
+   }
+    // Atualiza o header com as setas de ordenação
+   LSTresp.innerHTML = `
+   <div class="header">
+       <div onclick="FNCsortBy('valor')">Valor${VARlastSortColumn === 'valor' ? (VARsortDirection === 'asc' ? ' ↑' : ' ↓') : ''}</div>
+       <div onclick="FNCsortBy('posic')">Posic${VARlastSortColumn === 'posic' ? (VARsortDirection === 'asc' ? ' ↑' : ' ↓') : ''}</div>
+       <div onclick="FNCsortBy('ver')">Ver${VARlastSortColumn === 'ver' ? (VARsortDirection === 'asc' ? ' ↑' : ' ↓') : ''}</div>
+       <div onclick="FNCsortBy('code')">Code${VARlastSortColumn === 'code' ? (VARsortDirection === 'asc' ? ' ↑' : ' ↓') : ''}</div>
+       <div onclick="FNCsortBy('item')">Item${VARlastSortColumn === 'item' ? (VARsortDirection === 'asc' ? ' ↑' : ' ↓') : ''}</div>
+   </div>`;
+
+        const lines = data.split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
+
+        if (lines.length === 0) {
+          FNCShowMsg("Nada encontrado.");
+          return;
+        }
+
+        const searchTermNorm = FNCnormSTR(searchTerm);
+
+        // Função melhorada para destacar o texto encontrado
+        function highlightText(text, searchTerm) {
+          if (!searchTerm) return text;
+
+          const textNorm = FNCnormSTR(text);
+          const searchTermNorm = FNCnormSTR(searchTerm);
+
+          if (textNorm.includes(searchTermNorm)) {
+            let result = text;
+            let startIndex = textNorm.indexOf(searchTermNorm);
+
+            while (startIndex !== -1) {
+              const matchLength = searchTermNorm.length;
+              const originalText = text.substr(startIndex, matchLength);
+              result = result.replace(originalText, `<span class="highlight">${originalText}</span>`);
+              startIndex = textNorm.indexOf(searchTermNorm, startIndex + 1);
+            }
+            return result;
+          }
+          return text;
+        }
+
+        const filteredLines = lines.filter(line => {
+          const parts = line.split('|').map(part => part.trim());
+          if (parts.length !== 5) return false;
+
+          const [valor, posic, ver, code, item] = parts;
+          return FNCnormSTR(item).includes(searchTermNorm) ||
+            FNCnormSTR(code).includes(searchTermNorm) ||
+            FNCnormSTR(posic).includes(searchTermNorm) ||
+            FNCnormSTR(valor).includes(searchTermNorm);
+        });
+
+        filteredLines.forEach(line => {
+          const [valor, posic, ver, code, item] = line.split('|').map(part => part.trim());
+          const formattedLine = `
+            <div class="line" tabindex="0" onclick="FNCselectLine(this)">
+                <span class="valor">${highlightText(FNCformatMoney(valor), searchTerm)}</span>
+                <span class="posic">${highlightText(posic.padStart(5, '0'), searchTerm)}</span>
+                <span class="ver ${ver.toLowerCase() === 's' ? 'verified' : ''}">${ver}</span>
+                <span class="code">${highlightText(code, searchTerm)}</span>
+                <span class="item">${highlightText(item, searchTerm)}</span>
+            </div>
+        `;
+          LSTresp.innerHTML += formattedLine;
+        });
+      }
+
+      function FNChelp() { // Tela de Ajuda
+        if (VARmodal) return;
+        FNCstopMicrophone();
+
+        // Se já está mostrando ajuda, volta para a lista
+        if (LSTresp.innerHTML.includes("Ninja é um aplicativo")) {
+          loadFile();
+          FNCSearchData("");
+          return;
+        }
+
+        // Mostra a ajuda (removida a div header que causava a duplicação)
+        LSTresp.innerHTML = `
+          <div style="padding: 10px;">
+            Ninja é um aplicativo que usa IA desenvolvido com algoritmos avançados de pesquisa, comandos de voz tem cadastro de itens, deletar e editar itens.
+            Pode ser executado em qualquer celular, tablet ou computador com acesso a internet.
+            Não é necessario configurar redes, baixar ou instalar nada, apenas clicar no link recebido por e-mail ou mensagem.<br><br>
+            - Digite na Pesquisa acima um item ou parte dele, ex. Lampada, Valor de item, Estoque ou Code. <br><br>
+            - Se deixar a Pesquisa vazia carrego todos os Itens da base de dados.<br><br>
+            - A pesquisa não é sensível a letras maiúsculas ou minúsculas, acentuações ou múltiplos espaços. <br><br>
+            - Pesquise, clique num item depois clique em Editar, Deletar ou Cadastrar e cadastrando clique num item para transportar texto do item para o campo Item do cadastro facilitando a digitação.<br><br>
+            - Clique no botão Microphone e comande com voz como 'Ninja quero ajuda', 'Ninja limpar pesquisa', 'Ninja cadastrar',
+             'Ninja quero editar', 'Ninja faça venda', 'Ninja faça orçamento', 'Ninja encerrar', 'Ninja sair', 'Ninja quero deletar'.<br><br>
+            - Fale sempre 'Ninja' antes do comando de voz ou pesquisa.<br><br>
+            - Ao usar o Microphone e não for comando válido como os acima, Ninja pesquisará com o texto falado.<br><br>
+            <button onclick="FNChelp()" class="button-special" style="margin-top:10px;">Fechar Ajuda</button>
+          </div>`;
+
+        VARTxtLine = null;
+      }
+
+      function FNCshowconfirm(msg) {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('confirmModal');
+          const msgEl = document.getElementById('confirmmsg');
+          const yesBtn = document.getElementById('confirmYes');
+          const noBtn = document.getElementById('confirmNo');
+
+          msgEl.textContent = msg;
+          modal.style.display = 'flex';
+          VARmodal = true;
+
+          function handleYes() {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(true);
+          }
+
+          function handleNo() {
+            modal.style.display = 'none';
+            cleanup();
+            resolve(false);
+          }
+
+          function handleEscape(e) {
+            if (e.key === 'Escape') {
+              handleNo();
+            } else if (e.key === 'Enter') {
+              handleYes();
+            }
+          }
+
+          function cleanup() {
+            yesBtn.removeEventListener('click', handleYes);
+            noBtn.removeEventListener('click', handleNo);
+            document.removeEventListener('keydown', handleEscape);
+            VARmodal = false;
+          }
+
+          yesBtn.addEventListener('click', handleYes);
+          noBtn.addEventListener('click', handleNo);
+          document.addEventListener('keydown', handleEscape);
+        });
+      }
+
+      function FNCShowMsg(msg) {
+        FNCstopMicrophone();
+        const msgElement = document.getElementById("LINmsg");
+        msg = "⚠️ " + msg;
+        msgElement.innerHTML = msg;
+        msgElement.style.display = "block";
+        FNCSpeakMsg(msg.replace('⚠️', ''));
+        if (VARmsgTime) { clearTimeout(VARmsgTime); }
+        VARmsgTime = setTimeout(() => {
+          msgElement.style.display = "none";
+          VARmsgTime = null;
+        }, 6000);
+      }
+
+      function FNCShowMsg2(msg) {
+        FNCstopMicrophone();
+        const msgElement = document.getElementById("LINmsg");
+        msg = "⚠️ " + msg;
+        msgElement.innerHTML = msg;
+        msgElement.style.display = "block";
+
+        if (VARmsgTime) { clearTimeout(VARmsgTime); }
+        VARmsgTime = setTimeout(() => {
+          msgElement.style.display = "none";
+          VARmsgTime = null;
+        }, 6000);
+      }
+
+      function FNCSpeakMsg(texto) {
+        if (!texto || VARspeakerState.mode === 0 || VARptVoices.length === 0) return;
+
+        speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = texto;
+        msg.lang = 'pt-BR';
+
+        if (VARspeakerState.selectedVoice) {
+          msg.voice = VARspeakerState.selectedVoice;
+        }
+        speechSynthesis.speak(msg);
+      }
+
+      async function FNCstartSpeaker() { // Inicia o speaker
+        if (VARmodal) return;
+        const speakerIcon = document.getElementById('BTNSpeaker');
+
+        if (!('speechSynthesis' in window)) {
+          FNCShowMsg("Navegador não suporta síntese de voz. Use Google Chrome.");
+          return;
+        }
+
+        if (VARptVoices.length === 0) {
+          const voicesLoaded = await FNCinitVoices();
+          if (!voicesLoaded) {
+            FNCShowMsg("Erro: Impossível carregar vozes em português.");
+            return;
+          }
+        }
+
+        VARspeakerState.mode = (VARspeakerState.mode + 1) % 3;
+
+        switch (VARspeakerState.mode) {
+          case 0:
+            VARspeakerState.selectedVoice = null;
+            speakerIcon.style.filter = VARColorBlack;
+            FNCShowMsg("Aplicativo Ninja mudo : Icone Preto");
+            break;
+          case 1:
+            VARspeakerState.selectedVoice = VARptVoices[0];
+            speakerIcon.style.filter = VARColorBlue;
+            FNCShowMsg("Aplicativo Ninja com voz 1 : Icone Azul");
+            break;
+          case 2:
+            VARspeakerState.selectedVoice = VARptVoices[1] || VARptVoices[0];
+            speakerIcon.style.filter = VARColorGreen;
+            FNCShowMsg("Aplicativo Ninja com voz 2 : Icone Verde");
+            break;
+        }
+
+        FNCsaveSpeakerConfig();
+      }
+
+      function FNCinitVoices() {
+        return new Promise((resolve) => {
+          let voices = speechSynthesis.getVoices();
+
+          if (voices.length === 0) {
+            speechSynthesis.onvoiceschanged = () => {
+              voices = speechSynthesis.getVoices();
+              VARptVoices = voices.filter(voice =>
+                voice.lang.includes('pt') ||
+                voice.name.toLowerCase().includes('portuguese') ||
+                voice.name.toLowerCase().includes('brasil')
+              );
+              resolve(VARptVoices.length > 0);
+            };
+          } else {
+            VARptVoices = voices.filter(voice =>
+              voice.lang.includes('pt') ||
+              voice.name.toLowerCase().includes('portuguese') ||
+              voice.name.toLowerCase().includes('brasil')
+            );
+            resolve(VARptVoices.length > 0);
+          }
+        });
+      }
+
+      function FNCloadSpeakerConfig() {
+        const savedConfig = localStorage.getItem('speakerConfig');
+        if (savedConfig) {
+          try {
+            VARspeakerState = JSON.parse(savedConfig);
+            const speakerIcon = document.getElementById('BTNSpeaker');
+
+            switch (VARspeakerState.mode) {
+              case 0:
+                VARspeakerState.selectedVoice = null;
+                speakerIcon.style.filter = VARColorBlack;
+                break;
+              case 1:
+                VARspeakerState.selectedVoice = VARptVoices[0];
+                speakerIcon.style.filter = VARColorBlue;
+                break;
+              case 2:
+                VARspeakerState.selectedVoice = VARptVoices[1] || VARptVoices[0];
+                speakerIcon.style.filter = VARColorGreen;
+                break;
+            }
+
+            const messages = [
+              "Aplicativo Ninja mudo : Icone Preto",
+              "Aplicativo Ninja com voz 1 : Icone Azul",
+              "Aplicativo Ninja com voz 2 : Icone Verde"
+            ];
+            FNCShowMsg(messages[VARspeakerState.mode]);
+
+          } catch (e) {
+            VARspeakerState = {
+              mode: 2,
+              selectedVoice: null
+            };
+          }
+        }
+      }
+
+      function FNCsaveSpeakerConfig() {
+        const speakerConfig = JSON.stringify(VARspeakerState);
+        localStorage.setItem('speakerConfig', speakerConfig);
+      }
+
+      function FNCapplySpeakerState() {
+        const speakerIcon = document.getElementById('BTNSpeaker');
+        switch (VARspeakerState.mode) {
+          case 0:
+            speakerIcon.style.filter = VARColorBlack;
+            break;
+          case 1:
+            speakerIcon.style.filter = VARColorBlue;
+            break;
+          case 2:
+            speakerIcon.style.filter = VARColorGreen;
+            break;
+        }
+      }
+
+      function FNCClean() { // Limpa a pesquisa
+        if (VARmodal) return;
+        VARMicClique = false;
+        FNCMicVerif();
+        TXTsearch.value = "";
+        FNCupdateBTN();
+        loadFile();
+        VARTxtLine = null;
+      }
+
+      function FNCorcamento() { // Orçamento
+        if (VARmodal) return;
+        FNCstopMicrophone();
+        FNCShowMsg("[Orçamento] Em desenvolvimento. Aguarde.");
+      }
+
+      function FNCvenda() { // Venda
+        if (VARmodal) return;
+        FNCstopMicrophone();
+        FNCShowMsg("[Venda] Em desenvolvimento. Aguarde.");
+      }
+
+      function FNCstopMicrophone() {
+        const micIcon = document.getElementById("BTNMicrophone");
+        if (VARrecognition) {
+          VARrecognition.stop();
+          VARrecognition = null;
+        }
+
+        // Restaura o ícone para azul
+        micIcon.style.transition = 'all 0.3s ease';
+        micIcon.style.filter = VARColorBlue;
+        micIcon.setAttribute('data-recording', 'false');
+
+        // Restaura os eventos hover
+        micIcon.onmouseover = function () {
+          if (this.getAttribute('data-recording') !== 'true') {
+            this.style.filter = VARColorBlue;
+            this.style.transform = 'scale(1.1)';
+          }
+        };
+        micIcon.onmouseout = function () {
+          if (this.getAttribute('data-recording') !== 'true') {
+            this.style.filter = VARColorBlue;
+            this.style.transform = 'scale(1)';
+          }
+        };
+      }
+
+      async function FNCstartMicrophone() { // Inicia o microfone
+        if (VARmodal) return;
+        try {
+          if (VARrecognition) { // Se já está gravando, para a gravação
+            VARMicClique = false;
+            FNCstopMicrophone();
+            return;
+          }
+
+          VARMicClique = true; // Inicia nova gravação
+          FNCMicVerif();
+
+          // Cria o reconhecimento
+          VARrecognition = new webkitSpeechRecognition();
+          VARrecognition.lang = 'pt-BR';
+          VARrecognition.continuous = false;
+          VARrecognition.interimResults = false;
+
+          const recognitionPromise = new Promise((resolve, reject) => { // Configura Promise com timeout
+            const timeoutId = setTimeout(() => {
+              VARMicClique = false;
+              FNCMicVerif();
+              reject(new Error("Nenhuma fala detectada"));
+            }, 20000);
+
+            VARrecognition.onresult = (event) => {
+              clearTimeout(timeoutId);
+              const texto = event.results[0][0].transcript.toLowerCase();
+              resolve(texto);
+            };
+
+            VARrecognition.onerror = (event) => {
+              clearTimeout(timeoutId);
+              VARMicClique = false;
+              FNCMicVerif();
+            }
+
+            VARrecognition.onend = () => {
+              clearTimeout(timeoutId);
+              VARMicClique = false;
+              FNCMicVerif();
+            };
+          });
+
+          const texto = await recognitionPromise; // Aguarda o resultado
+
+          let comando = texto.replace('ninja', '').trim(); // Processa o resultado
+          document.getElementById("TXTquest").value = comando;
+          FNCsearch();
+
+        } catch (err) {
+          VARMicClique = false;
+          FNCMicVerif();
+          FNCShowMsg2("Erro no reconhecimento. Recarregando...");
+        }
+      }
+
+      function FNCshowSecuritymsg() {
+        FNCShowMsg("<...>");
+      }
+
+      function FNCaddSecurityProtections() {
+        // Mantém apenas proteções básicas
+        document.addEventListener('contextmenu', function (e) {
+          e.preventDefault();
+          return false;
+        });
+
+        document.addEventListener('copy', function (e) {
+          e.preventDefault();
+          return false;
+        });
+      }
+
+      function FNCopenCreate() { // Modal de cadastro
+        if (VARmodal) return;
+
+        VARmodal = true;
+        FNCShowMsg("Cadastrar item");
+
+        const data = localStorage.getItem(VARFileName);
+        const lines = data.split('\n').filter(line => line.trim());
+        let maxCode = 0;
+        lines.forEach(line => {
+          const parts = line.split('|');
+          const code = parseInt(parts[3]);
+          if (code > maxCode) maxCode = code;
+        });
+        const newCode = String(maxCode + 1).padStart(4, '0');
+        document.getElementById("VARnewCode").value = newCode;
+        if (VARTxtLine) {
+          const spans = VARTxtLine.querySelectorAll('span');
+          const valor = spans[0].textContent.trim().replace('R$', '').trim();
+          const posic = spans[1].textContent.trim();
+          const ver = spans[2].textContent.trim();
+          const item = spans[4].textContent.trim();
+          document.getElementById("VARnewValor").value = valor;
+          document.getElementById("VARnewPosic").value = posic;
+          document.getElementById("VARnewVer").value = ver;
+          document.getElementById("VARnewItem").value = item;
+        } else {
+          document.getElementById("VARnewValor").value = "";
+          document.getElementById("VARnewPosic").value = "";
+          document.getElementById("VARnewVer").value = "N";
+          document.getElementById("VARnewItem").value = "";
+        }
+        document.getElementById("VARcreateModal").style.display = "flex";
+      }
+
+      function FNCcloseCreate() { // Fecha modal de cadastro
+        document.getElementById("VARcreateModal").style.display = "none";
+        VARmodal = false;
+        FNCShowMsg("Cadastro cancelado.");
+        return false;
+      }
+
+      function FNCrefdatabase() {
+        function randomValue(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        const produtos = [
+          "Lâmpada LED 9w",
+          "Cabo flexível 2.5mm",
+          "Disjuntor 20A",
+          "Tomada 10A",
+          "Interruptor simples",
+          "Fita isolante 20m",
+          "Extensão 5m",
+          "Plafon LED",
+          "Sensor presença",
+          "Timer digital",
+          "Chuveiro 220v",
+          "Quadro distribuição",
+          "Campainha sem fio",
+          "Luminária pendente",
+          "Plug macho 20A"
+        ];
+        let itens = [];
+        for (let i = 1; i <= 50; i++) {
+          const code = i.toString().padStart(4, '0');
+          const valor = (randomValue(1000, 99999) / 100).toFixed(2);
+          const posic = randomValue(1, 99999).toString().padStart(5, '0');
+          const ver = Math.random() > 0.3 ? 'S' : 'N';
+          const item = produtos[randomValue(0, produtos.length - 1)];
+          itens.push(`${valor}|${posic}|${ver}|${code}|${item}`);
+        }
+        itens.sort((a, b) => {
+          const codeA = a.split('|')[3];
+          const codeB = b.split('|')[3];
+          return codeA.localeCompare(codeB);
+        });
+        localStorage.setItem('itens.dbf', itens.join('\n'));
+        FNCSearchData("");
+      }
+
+      window.addEventListener('load', function () {
+        FNCaddSecurityProtections();
+        console.clear();
+      });
+
+      document.getElementById("BTNvenda").addEventListener("click", function () {
+        FNCvenda();
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (!document.activeElement.matches('input, textarea')) {
+          if (event.key.toLowerCase() === 'o') {
+            event.preventDefault();
+            FNCorcamento();
+          } else if (event.key.toLowerCase() === 'v') {
+            event.preventDefault();
+            FNCvenda();
+          }
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const editModal = document.getElementById("editModal");
+        if (editModal.style.display === "flex") {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            BTNSaveEdit();
+          }
+          if (event.key === "Escape") {
+            event.preventDefault();
+            FNCcloseEDIT();
+          }
+        }
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          FNCsearch();
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          FNCClean();
+        }
+        if (event.key === "F1") {
+          event.preventDefault();
+          FNChelp();
+        }
+      });
+
+      document.getElementById("BTNedit").addEventListener("click", function () {
+        FNCopenEDIT(VARTxtLine);
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('filterValor').addEventListener('change', function (e) {
+          const valorMax = document.getElementById('valorMax');
+          valorMax.classList.toggle('hidden', e.target.value !== 'entre');
+        });
+        const filterElements = ['filterValor', 'filterVer', 'valorMin', 'valorMax'];
+        filterElements.forEach(id => {
+          document.getElementById(id).addEventListener('change', () => {
+            FNCSearchData(document.getElementById('TXTquest').value);
+          });
+        });
+      });
+
+      document.querySelector(".BTNSaveCreate").addEventListener("click", FNCopenCreate);
+
+      document.addEventListener("keydown", (event) => {
+        const VARcreateModal = document.getElementById("VARcreateModal");
+        const VAReditModal = document.getElementById("editModal");
+        if (VARcreateModal.style.display === "flex" ||
+          VAReditModal.style.display === "flex" ||
+          event.target.tagName === "INPUT" ||
+          event.target.tagName === "TEXTAREA") {
+          return;
+        }
+
+        switch (event.key.toLowerCase()) {
+          case 'e':
+            event.preventDefault();
+            if (VARTxtLine) {
+              document.getElementById("BTNedit").click();
+            } else {
+              FNCShowMsg(VARTxtPad1);
+            }
+            break;
+          case 'd':
+            event.preventDefault();
+            if (VARTxtLine) {
+              document.querySelector(".BTNdelete").click();
+            } else {
+              FNCShowMsg(VARTxtPad);
+            }
+            break;
+          case 'c':
+            event.preventDefault();
+            document.querySelector(".BTNSaveCreate").click();
+            break;
+          case 'm':
+            event.preventDefault();
+            FNCstartMicrophone();
+            break;
+          case 'p':
+            event.preventDefault();
+            const searchBox = document.getElementById("TXTquest");
+            searchBox.focus();
+            searchBox.select();
+            FNCShowMsg("Digite sua pesquisa...");
+            break;
+        }
+      });
+
+      TXTsearch.addEventListener("input", FNCdebounce(() => { // Pesquisa de itens
+        if (VARmodal) return;
+        const query = FNCnormSTR(TXTsearch.value);
+        FNCSearchData(query);
+      }, 300));
+
+      // Incialização do sistema
+      window.addEventListener("load", async () => {
+        VARColorBlack = "brightness(0)"; // Preto
+        VARColorBlue = "invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%)"; // Azul
+        VARColorGreen = "invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)"; // Verde
+
+        await FNCinitVoices();
+        if (VARptVoices.length === 0) { speechSynthesis.onvoiceschanged = FNCinitVoices; }
+        FNCloadSpeakerConfig();
+
+        FNCrefdatabase();
+        loadFile();
+
+        //FNChelp();
+        FNCupdateBTN();
+        document.getElementById("VARnameVerSpan").textContent = VARNameVer;
+        FNCShowMsg(VARTxtPad3);
+      });
+
+      function FNCMicVerif() {
+        const micIcon = document.getElementById("BTNMicrophone");
+        const msgElement = document.getElementById("LINmsg");
+
+        if (VARMicClique) {
+          // Microfone ativo - vermelho
+          micIcon.style.filter = 'invert(22%) sepia(68%) saturate(7154%) hue-rotate(357deg) brightness(97%) contrast(113%)';
+          micIcon.setAttribute('data-recording', 'true');
+          micIcon.style.transform = 'scale(1)';
+
+          // Remove eventos hover enquanto grava
+          micIcon.onmouseover = null;
+          micIcon.onmouseout = null;
+
+          // Mostra mensagem padrão
+          msgElement.innerHTML = "⚠️ " + VARTxtPad2;
+          msgElement.style.display = "block";
+        } else {
+          // Microfone inativo - azul
+          micIcon.style.filter = 'invert(47%) sepia(55%) saturate(1000%) hue-rotate(188deg) brightness(95%) contrast(87%)';
+          micIcon.setAttribute('data-recording', 'false');
+
+          // Restaura eventos hover
+          micIcon.onmouseover = function () {
+            if (this.getAttribute('data-recording') !== 'true') {
+              this.style.filter = VARColorBlue;
+              this.style.transform = 'scale(1.1)';
+            }
+          };
+          micIcon.onmouseout = function () {
+            if (this.getAttribute('data-recording') !== 'true') {
+              this.style.filter = VARColorBlue;
+              this.style.transform = 'scale(1)';
+            }
+          };
+          msgElement.style.display = "none"; // Limpa mensagem
+        }
+      }
+
+      let VARsortDirection = 'asc';
+      let VARlastSortColumn = 'code';  // Começa ordenado por código
+      function FNCsortBy(column) {
+        const data = localStorage.getItem(VARFileName);
+        let lines = data.split('\n').filter(line => line.trim());
+        if (column === VARlastSortColumn) {
+          VARsortDirection = VARsortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+          VARsortDirection = 'asc';
+        }
+        VARlastSortColumn = column;
+        const headers = document.querySelectorAll('.header > div');
+        headers.forEach(header => {
+          // Remove setas existentes
+          header.textContent = header.textContent.replace(/[↑↓]\s*$/, '');
+
+          if (header.textContent.toLowerCase().includes(column)) {
+            header.textContent += VARsortDirection === 'asc' ? ' ↑' : ' ↓';
+          }
+        });
+        lines.sort((a, b) => {
+          const partsA = a.split('|');
+          const partsB = b.split('|');
+
+          let valueA, valueB;
+
+          switch (column) {
+            case 'valor':
+              valueA = parseFloat(partsA[0].replace(/[^\d.,]/g, '').replace(',', '.'));
+              valueB = parseFloat(partsB[0].replace(/[^\d.,]/g, '').replace(',', '.'));
+              break;
+            case 'posic':
+              valueA = parseInt(partsA[1]);
+              valueB = parseInt(partsB[1]);
+              break;
+            case 'ver':
+              valueA = partsA[2];
+              valueB = partsB[2];
+              break;
+            case 'code':
+              valueA = parseInt(partsA[3]);
+              valueB = parseInt(partsB[3]);
+              break;
+            case 'item':
+              valueA = partsA[4].toLowerCase();
+              valueB = partsB[4].toLowerCase();
+              break;
+          }
+          if (VARsortDirection === 'asc') {
+            return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+          } else {
+            return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+          }
+        });
+        localStorage.setItem(VARFileName, lines.join('\n'));
+        FNCSearchData(document.getElementById("TXTquest").value);
+        FNCShowMsg(`Lista ordenada por ${column} em ordem ${VARsortDirection === 'asc' ? 'crescente' : 'decrescente'}`
+        );
+      }
+
+    </script>
+    <div id="VARcreateModal" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #1e3a5d;
+        padding: 6px;
+        border-radius: 5px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        border: 2px solid #1e3a5d;">
+      <div style="
+background-color: #1e3a5d;
+padding: 6px;
+border-radius: 5px;
+width: 300px;
+color: white;">
+        <div style="
+background-color: #4f8dcb;
+color: white;
+padding: 5px;
+text-align: center;
+border-radius: 5px;
+margin-bottom: 15px;
+font-weight: bold;">Cadastrar Item</div>
+        <label for="VARnewCode">Code:</label>
+        <input type="text" id="VARnewCode" style="width: 100%; margin-bottom: 10px" disabled />
+        <label for="VARnewItem">Item:</label>
+        <input type="text" id="VARnewItem" style="width: 100%; margin-bottom: 20px" />
+        <div class="button-container" style="justify-content: space-between">
+          <button id="BTNSaveCreate" onclick="FNCSaveCreate()">[ENTER] Cadastrar</button>
+          <button id="BTNcancelCreate" onclick="FNCcloseCreate()">[ESC] Cancelar</button>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
+
+</html>
